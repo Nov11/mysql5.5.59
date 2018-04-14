@@ -1,0 +1,306 @@
+commit 1aa1f40fb471ad84b82f41e406ea72d764db09ce
+Author: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+Date:   Mon Nov 27 14:51:04 2017 +0530
+
+    Updated copyright year in user visible text
+
+commit e6233de7d648e967a252ba7fe1fd82b4f7598d21
+Author: Aditya A <aditya.a@oracle.com>
+Date:   Fri Nov 17 14:46:09 2017 +0530
+
+    Bug #24296076   INNODB REPORTS WARNING WHILE INNODB_UNDO_LOG_TRUNCATE IS ENABLED
+    
+    PROBLEM
+    -------
+    
+    This warning message is printed when trx_sys->rseg_history_len is greater than some
+    arbitrary magic number (2000000). By seeing the reproducing scenario where we keep
+    a read view open and do a lot of transactions on table which increases the hitsory
+    length it is entirely possible that trx_sys->rseg_history_len can exceed 2000000.
+    So this is not a bug due to corruption of history length.The warning message was
+    just added to test some scenario and not removed.
+    
+    FIX
+    ---
+    
+    1.Print this warning message only for debug versions.
+    2.Modified the warning message with more detailed information.
+    3.Don't crash even in debug versions.
+    
+    [#rb 17929 Reviewed by jimmy and satya]
+
+commit 82abf07685517ea860c47bd4ec75ee5327c217dc
+Author: Sreeharsha Ramanavarapu <sreeharsha.ramanavarapu@oracle.com>
+Date:   Thu Nov 16 09:31:12 2017 +0530
+
+    Bug #26881946: INCORRECT BEHAVIOR WITH "VALUES"
+    
+    Issue:
+    ------
+    VALUES doesn't have a type() function and is considered a
+    Item_field.
+    
+    Solution for 5.7:
+    -----------------
+    Add a new type() function for Item_values_insert.
+    
+    On 8.0 and trunk it was fixed by Mithun's Bug#19601973.
+    
+    Solution for 5.6:
+    -----------------
+    Additionally Bug#17458914 is backported.
+    
+    This will address the problem of using VALUES() in
+    INSERT ... ON DUPLICATE KEY UPDATE. Create a field object
+    only if it is in the UPDATE clause, else return a NULL
+    item.
+    
+    This will also address the problems mentioned in
+    Bug#14789787 and Bug#16756402.
+    
+    Solution for 5.5:
+    -----------------
+    As mentioned above Bug#17458914 is backported.
+    
+    Additionally Bug#14786324 is also backported.
+    
+    When VALUES() is detected outside its meaningful place,
+    it should be treated as NULL and is thus replaced with a
+    Field_null object, with the same name as the original
+    field.
+    
+    Fields with type NULL are generally not handled well inside
+    the server (e.g Innodb will not accept them and it is
+    impossible to create them in regular tables). So create a
+    new const NULL item instead.
+
+commit 0498f9f7badf8c094f23fd2ef128b54034d70c9f
+Author: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+Date:   Mon Nov 13 19:45:57 2017 +0530
+
+    	Bug#27072155 - DEFAULT PLUGIN_DIR SHOULD BE DIFFERENT FOR DEBUG BUILD
+    	- Update the default plugin directory for debug builds
+
+commit b0a936b0d933ad56192fd7cc47f4b4f460da4230
+Author: Tor Didriksen <tor.didriksen@oracle.com>
+Date:   Thu Nov 9 08:45:45 2017 +0100
+
+    dos2unix cmake/mysql_add_executable.cmake
+
+commit 416d58a9ddb341e7037ee15834fdb739baffc1c4
+Author: Tor Didriksen <tor.didriksen@oracle.com>
+Date:   Thu Nov 9 08:36:59 2017 +0100
+
+    Bug#26022865 BUILD FOR WINDOWS-S12-64BIT,ADVANCED IS FAILING ON PB2 MYSQL-5.6
+    
+    Remove cmake code for signing executables.
+    Automatic signing has always failed anyways.
+    It should be done manually as part of the release process.
+
+commit f92722b5d9713947f22018f28eee971c7e547c7e
+Author: Bjorn Munch <bjorn.munch@oracle.com>
+Date:   Fri Nov 3 12:21:26 2017 +0100
+
+    Bug #27021754 MYSQLTEST MAN PAGES WILL BE REMOVED, PACKAGING MUST BE PREPARED
+    
+      Removed relevant man pages from file lists for RPM and DEB
+    
+      RPM: added conditional removal of them, so it works both before and
+      after man pages are actually removed
+    
+      DEB: added to exclude list (5.6+)
+
+commit 4677865be92bd6a7f3c0e75611ae128d10fda475
+Author: Arun Kuruvila <arun.kuruvila@oracle.com>
+Date:   Thu Oct 26 18:07:36 2017 +0530
+
+    Bug #26880757: MYISAM_USE_MMAP=1 ON WINDOWS FREQUENTLY DOES
+                   NOT UPDATE FILE ON DISK
+    
+    Description:- When the server variable, "myisam_use_mmap" is
+    enabled, MyISAM tables on windows are not updating the file
+    on disk even when the server variable "flush" is set to 1.
+    This is inturn making the table corrupted when encountering
+    a power failure.
+    
+    Analysis:- When the server variable "myisam_use_mmap" is set,
+    files of MyISAM tables will be memory mapped using the OS
+    APIs mmap()/munmap()/msync() on Unix and CreateFileMapping()
+    /UnmapViewOfFile()/FlushViewOfFile() on Windows. msync() and
+    FlushViewOfFile() is responsible for flushing the changes
+    made to the in-core copy of a file that was mapped into
+    memory using mmap()/CreateFileMapping() back to the
+    file system.  FLUSH is determined by the OS unless
+    explicitly called using msync()/FlushViewOfFile().
+    
+    When the server variables "myisam_use_mmap" and "flush" are
+    enabled, MyISAM is only flushing the files from file system
+    cache to disc using "mysql_file_sync()" and not the memory
+    mapped file from memory to FS cache using "my_msync()".
+    ["my_msync()" inturn calls  msync() on Unix and
+    FlushViewOfFile() on Windows.
+    
+    Fix:- As part of the fix, if server variable
+    "myisam_use_mmap" is enabled along with  "flush",
+    "my_msync()" is invoked to flush the data in memory to file
+    system cache and followed by "mysql_file_sync()" which will
+    flush the data from file system cache to disk.
+
+commit a24a42e68b43ab3b4ea796abc24bbe1a4577202c
+Author: Karthik Kamath <karthik.kamath@oracle.com>
+Date:   Mon Oct 23 10:56:20 2017 +0530
+
+    BUG#26529369: CREATE INDEX WITH LONG COMMENT CAUSE
+                  UNEXPECTED ERROR
+    
+    ANALYSIS:
+    =========
+    Creating many indexes with large amount of index
+    information causes a server exit.
+    
+    FIX:
+    ====
+    A appropriate error is reported when the cumulative index
+    information length exceeds the 2 byte range (i.e 65535).
+
+commit 996aa611134b975ff62182e65d1cb04d9e8c0427
+Author: Sreeharsha Ramanavarapu <sreeharsha.ramanavarapu@oracle.com>
+Date:   Thu Oct 19 10:19:36 2017 +0530
+
+    Bug #26867652: INCORRECT BEHAVIOR WITH PREPARE STATEMENT
+                   AND PARAM IN ORDER BY
+    
+    Issue:
+    ------
+    This issue can occur when the ORDER BY list refers to a
+    column that contains a parameter in the select list.
+    
+    Solution:
+    ---------
+    In JOIN::update_depend_map and get_sort_by_table, the
+    ORDER BY list's used_tables isn't checked for parameters.
+    This can result in incorrect behavior.
+    
+    This is a partial backport of Roy's
+    "Bug#25466100: Refactor const_item processing"
+
+commit 0bceaef5d9b6fd3e34f862901174d01e35fe7b1a
+Merge: 4ac23b2 be111ff
+Author: Nawaz Nazeer Ahamed <nawaz.nazeer.ahamed@oracle.com>
+Date:   Mon Oct 16 15:21:04 2017 +0530
+
+    Merge branch 'mysql-5.5.58-release' into mysql-5.5
+
+commit 4ac23b28408209c149a673e6b0c3e264c4da8faa
+Author: Tor Didriksen <tor.didriksen@oracle.com>
+Date:   Mon Oct 9 16:24:11 2017 +0200
+
+    Backport patch for Bug#16877045 5.6-CLUSTER-7.3 WIN32 SQL_YACC.CC BUILD PROBLEM
+    
+    Building with ninja shows the problem:
+    cmake .. -G Ninja
+    ninja
+    ninja: error: dependency cycle: sql/GenServerSource -> sql/CMakeFiles/GenServerSource -> sql/sql_builtin.cc -> cmake_order_depends_target_sq
+     sql/GenServerSource
+    
+    Bug#16877045 5.6-CLUSTER-7.3 WIN32 SQL_YACC.CC BUILD PROBLEM
+     - Somewhat circular dependency caused by the configured files sql_builtin.cc  being included as
+        part of the files to generate in sql/
+     - Move sql_builtin.cc out of GEN_SOURCES variable.
+     - Create new variable CONF_SOURCES to be used for configured files.
+
+commit 461eef45301fe6c725b0add5a6f28057a3d67e21
+Author: Anushree Prakash B <anushree.prakash.b@oracle.com>
+Date:   Wed Sep 13 12:14:06 2017 +0530
+
+    Bug#26372491 - RCE THROUGH THE MISHANDLE OF BACKSLASH
+    
+    Post push fix to address test script failure.
+
+commit 31c2744d300e3935821adbc58667f323067b71c9
+Author: Tor Didriksen <tor.didriksen@oracle.com>
+Date:   Fri Sep 8 16:47:44 2017 +0200
+
+    Bug#23072792 MYSQL_GROUP_SUFFIX DOES NOT WORK
+    
+    Reintroduce environment variable MYSQL_GROUP_SUFFIX to be used as
+    --default-group-suffix value if not already set.
+    
+    The environment variable was accidentally renamed to DEFAULT_GROUP_SUFFIX_ENV
+    in MySQL server 5.5.
+
+commit 31a372aa1c2b93dc75267d1f05a7f7fca6080dc0
+Author: Anushree Prakash B <anushree.prakash.b@oracle.com>
+Date:   Fri Sep 8 18:29:07 2017 +0530
+
+    Bug#26372491 - RCE THROUGH THE MISHANDLE OF BACKSLASH
+    
+    DESCRIPTION:
+    ===========
+    The bug is related to incorrect parsing of SQL queries
+    when typed in on the CLI. The incorrect parsing can
+    result in unexpected results.
+    
+    ANALYSIS:
+    ========
+    The scenarios mainly happens for identifier names
+    with a typical combination of backslashes and backticks.
+    The incorrect parsing can either result in executing
+    additional queries or can result in query truncation.
+    This can impact mysqldump as well.
+    
+    FIX:
+    ===
+    The fix makes sure that such identifier names are
+    correctly parsed and a proper query is sent to the
+    server for execution.
+
+commit 4fcf0801332bdd5eec441790d46ab6136e1e0326
+Author: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+Date:   Thu Sep 7 16:11:15 2017 +0530
+
+    Bug#26742748 - 8.0 DOCKER IMAGE RPM GENERATES 5.7 DOC URL IN /ETC/MY.CNF
+
+commit 63e2b430844662c4860c40a40aff811672f5333a
+Author: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+Date:   Wed Sep 6 17:48:42 2017 +0530
+
+    Bug#26747305 - HOSTNAME: COMMAND NOT FOUND WHILE STARTING CONTAINER WITH 5.5 DOCKER IMAGE
+       - Add hostname package for docker rpm builds.
+
+commit 15b72c667722932310cf9b08ceff4440143ea8b0
+Author: Sreeharsha Ramanavarapu <sreeharsha.ramanavarapu@oracle.com>
+Date:   Wed Sep 6 06:45:50 2017 +0530
+
+    Bug #26704451: INCORRECT BEHAVIOR WITH USE OF CERTAIN
+                   CHARSETS AND SHA2
+    
+    Missed pushing to 5.5.
+
+commit 0ab741787f84ebaf5bb096b2add73ce735cf1d25
+Author: Aakanksha Verma <aakanksha.verma@oracle.com>
+Date:   Thu Aug 31 15:44:42 2017 +0530
+
+    Bug #20748521	ASSERTION `I == UINT2KORR(PART_REC_BUF_PTR)' FAILED. |
+    		HANDLE_ORDERED_INDEX_SCAN
+    
+    PROBLEM
+    =======
+    
+    Heap record fetch overwrites the space for next partition in
+    m_ordered_rec_buffer.The 2 byte partition ID gets overwritten
+    to zero and the assert fails .
+    
+    FIX
+    ===
+    Setting the m_rec_length to aligned size of share->reclength only incase
+    of Heap engine.
+    
+    Reviewed by: Debarun Banerjee<debarun.banerjee@oracle.com>
+    RB: 17255
+
+commit 03c1692d777b7d2e3d8f77ff6ed6b5d1a6ea4089
+Author: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+Date:   Tue Aug 29 15:42:38 2017 +0530
+
+    Raise version number after cloning 5.5.58
