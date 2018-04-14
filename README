@@ -1,3 +1,11 @@
+This is the earliest version that I can find on official web site with a cmake support.
+
+I'm going to use this version as code base to apply examples from 'uderstanding mysql internals'.
+
+The version mentioned in that book is 5.1. There is no cmake support back then. And I'm not proficient in setting up
+IDE on a makefile build system. While 5.7 has a source code tar ball twice the size of 5.5. I'll just pick 5.5 for now.
+=================================================================
+
 MySQL Server 5.5
 
 This is a release of MySQL, a dual-license SQL database server.
