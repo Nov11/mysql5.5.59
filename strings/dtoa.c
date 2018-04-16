@@ -92,7 +92,7 @@ size_t my_fcvt(double x, int precision, char *to, my_bool *error)
   char *res, *src, *end, *dst= to;
   char buf[DTOA_BUFF_SIZE];
   DBUG_ASSERT(precision >= 0 && precision < NOT_FIXED_DEC && to != NULL);
-  
+
   res= dtoa(x, 5, precision, &decpt, &sign, &end, buf, sizeof(buf));
 
   if (decpt == DTOA_OVERFLOW)
@@ -132,11 +132,11 @@ size_t my_fcvt(double x, int precision, char *to, my_bool *error)
   {
     if (len <= decpt)
       *dst++= '.';
-    
+
     for (i= precision - max(0, (len - decpt)); i > 0; i--)
       *dst++= '0';
   }
-  
+
   *dst= '\0';
   if (error != NULL)
     *error= FALSE;
@@ -217,7 +217,7 @@ size_t my_gcvt(double x, my_gcvt_arg_type type, int width, char *to,
   char buf[DTOA_BUFF_SIZE];
   my_bool have_space, force_e_format;
   DBUG_ASSERT(width > 0 && to != NULL);
-  
+
   /* We want to remove '-' from equations early */
   if (x < 0.)
     width--;
@@ -246,7 +246,7 @@ size_t my_gcvt(double x, my_gcvt_arg_type type, int width, char *to,
      to count it here.
    */
   exp_len= 1 + (decpt >= 101 || decpt <= -99) + (decpt >= 11 || decpt <= -9);
-  
+
   /*
      Do we have enough space for all digits in the 'f' format?
      Let 'len' be the number of significant digits returned by dtoa,
@@ -299,7 +299,7 @@ size_t my_gcvt(double x, my_gcvt_arg_type type, int width, char *to,
        ((decpt <= width && (decpt >= -1 || (decpt == -2 &&
                                             (len > 1 || !force_e_format)))) &&
          !force_e_format)) &&
-      
+
        /*
          Use the 'e' format in some cases even if we have enough space for the
          'f' one. See comment for MAX_DECPT_FOR_F_FORMAT.
@@ -321,7 +321,7 @@ size_t my_gcvt(double x, my_gcvt_arg_type type, int width, char *to,
           *error= TRUE;
         width= decpt;
       }
-      
+
       /*
         We want to truncate (len - width) least significant digits after the
         decimal point. For this we are calling dtoa with mode=5, passing the
@@ -339,7 +339,7 @@ size_t my_gcvt(double x, my_gcvt_arg_type type, int width, char *to,
       *dst++= '0';
       goto end;
     }
-    
+
     /*
       At this point we are sure we have enough space to put all digits
       returned by dtoa
@@ -388,7 +388,7 @@ size_t my_gcvt(double x, my_gcvt_arg_type type, int width, char *to,
         *error= TRUE;
       width= 0;
     }
-      
+
     /* Do we have to truncate any digits? */
     if (width < len)
     {
@@ -808,7 +808,7 @@ static Bigint *s2b(const char *s, int nd0, int nd, ULong y9, Stack_alloc *alloc)
   b= Balloc(k, alloc);
   b->p.x[0]= y9;
   b->wds= 1;
-  
+
   i= 9;
   if (9 < nd0)
   {
@@ -1379,6 +1379,7 @@ static double my_strtod_int(const char *s00, char **se, int *error, char *buf, s
     case '-':
       sign= 1;
       /* no break */
+      // fall through
     case '+':
       s++;
       goto break2;
@@ -1395,7 +1396,7 @@ static double my_strtod_int(const char *s00, char **se, int *error, char *buf, s
  break2:
   if (s >= end)
     goto ret0;
-  
+
   if (*s == '0')
   {
     nz0= 1;
@@ -1475,6 +1476,7 @@ static double my_strtod_int(const char *s00, char **se, int *error, char *buf, s
       switch (c= *s) {
       case '-':
         esign= 1;
+        // fall through
       case '+':
         c= *++s;
       }
@@ -2212,7 +2214,7 @@ static char *dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
     to hold the suppressed trailing zeros.
   */
 
-  int bbits, b2, b5, be, dig, i, ieps, UNINIT_VAR(ilim), ilim0, 
+  int bbits, b2, b5, be, dig, i, ieps, UNINIT_VAR(ilim), ilim0,
     UNINIT_VAR(ilim1), j, j1, k, k0, k_check, leftright, m2, m5, s2, s5,
     spec_case, try_quick;
   Long L;
@@ -2226,7 +2228,7 @@ static char *dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
   int rounding;
 #endif
   Stack_alloc alloc;
-  
+
   alloc.begin= alloc.free= buf;
   alloc.end= buf + buf_size;
   memset(alloc.freelist, 0, sizeof(alloc.freelist));
@@ -2253,7 +2255,7 @@ static char *dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
       *rve= res + 1;
     return res;
   }
-  
+
 #ifdef Honor_FLT_ROUNDS
   if ((rounding= Flt_Rounds) >= 2)
   {
@@ -2277,12 +2279,12 @@ static char *dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
       log10(x)      =  log(x) / log(10)
                    ~=~ log(1.5)/log(10) + (x-1.5)/(1.5*log(10))
       log10(d)= (i-Bias)*log(2)/log(10) + log10(d2)
-     
+
       This suggests computing an approximation k to log10(d) by
-     
+
       k= (i - Bias)*0.301029995663981
            + ( (d2-1.5)*0.289529654602168 + 0.176091259055681 );
-     
+
       We want k to be too large rather than too small.
       The error in the first-order Taylor series approximation
       is in our favor, so we just round up the constant enough
@@ -2369,6 +2371,7 @@ static char *dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
   case 2:
     leftright= 0;
     /* no break */
+    // fall through
   case 4:
     if (ndigits <= 0)
       ndigits= 1;
@@ -2377,6 +2380,7 @@ static char *dtoa(double dd, int mode, int ndigits, int *decpt, int *sign,
   case 3:
     leftright= 0;
     /* no break */
+    // fall through
   case 5:
     i= ndigits + k + 1;
     ilim= i;
@@ -2624,7 +2628,7 @@ bump_up:
   /*
     Arrange for convenient computation of quotients:
     shift left if necessary so divisor has 4 leading 0 bits.
-    
+
     Perhaps we should just compute leading 28 bits of S once
     a nd for all and pass them and a shift to quorem, so it
     can do shifts and ors to compute the numerator for q.
