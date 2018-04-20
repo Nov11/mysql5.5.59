@@ -349,7 +349,24 @@ int ha_csv::fetch_line(uchar *buffer) {
   return 0;
 }
 
+handlerton *mycsv_hton;
+static handler *mycsv_create_handler(handlerton *hton,
+                                     TABLE_SHARE *table,
+                                     MEM_ROOT *mem_root) {
+  return new(mem_root) ha_csv(hton, table);
+}
+static int mycsv_init(void *p) {
+  mycsv_hton = (handlerton *) p;
 
+  mycsv_hton->state = SHOW_OPTION_YES;
+  mycsv_hton->create = mycsv_create_handler;
+  mycsv_hton->flags = HTON_CAN_RECREATE;
+
+  return 0;
+}
+static int mycsv_done(void *p) {
+  return 0;
+}
 /* Defines the global structure for the plugin. */
 /*struct st_mysql_plugin
 {
@@ -367,17 +384,17 @@ int ha_csv::fetch_line(uchar *buffer) {
   void * __reserved1;   *//* reserved for dependency checking             *//*
   unsigned long flags;  *//* flags for plugin *//*
 };*/
-
+int invaliddata;
 mysql_declare_plugin(my_csv)
         {
             MYSQL_STORAGE_ENGINE_PLUGIN,
-            nullptr,
+            &invaliddata,
             "plugin name :my csv storage engine",
             "author:based on oreilly's mysql interals/ source code is modified to adopt them into version 5.5 from 5.1",
             "description: useless storage engine",
             PLUGIN_LICENSE_GPL,
-            nullptr,
-            nullptr,
+            mycsv_init,
+            mycsv_done,
             0x0001,
             nullptr,
             nullptr,
