@@ -115,7 +115,11 @@ ulong ha_csv::index_flags(uint idx, uint part, bool all_parts) const {
 }
 
 THR_LOCK_DATA **ha_csv::store_lock(THD *thd, THR_LOCK_DATA **to, enum thr_lock_type lock_type) {
-  return nullptr;
+  if (lock_type != TL_IGNORE && lock.type == TL_UNLOCK)
+    lock.type = lock_type;
+
+  *to++ = &lock;
+  return to;
 }
 
 int ha_csv::open(const char *name, int mode, uint test_if_locked) {
@@ -129,7 +133,7 @@ int ha_csv::open(const char *name, int mode, uint test_if_locked) {
     return 1;
 
   /* Translate the name of the parameter 'name' into the data file name. */
-  fn_format(file->fname, name, "", ".csv",
+  fn_format(file->fname, name, "", ".mycsv",
             MY_REPLACE_EXT | MY_UNPACK_FILENAME);
 
   /*
@@ -295,6 +299,8 @@ int ha_csv::fetch_line(uchar *buffer) {
         class.
       */
       if (end_of_field && *field) {
+        auto f = *field;
+        bitmap_set_bit(f->table->write_set, f->field_index);
         (*field)->store(field_buf.ptr(), field_buf.length(),
                         system_charset_info);
         field++;
@@ -389,7 +395,7 @@ mysql_declare_plugin(my_csv)
         {
             MYSQL_STORAGE_ENGINE_PLUGIN,
             &invaliddata,
-            "plugin name :my csv storage engine",
+            "mycsv",
             "author:based on oreilly's mysql interals/ source code is modified to adopt them into version 5.5 from 5.1",
             "description: useless storage engine",
             PLUGIN_LICENSE_GPL,
