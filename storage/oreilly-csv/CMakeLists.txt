@@ -13,6 +13,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-
+#SET(MY_CSV_PLUGIN_STATIC  "mycsv")
+#SET(MY_CSV_PLUGIN_MANDATORY TRUE)
 SET(MY_CSV_SOURCES  ha_csv.cpp ha_csv.h)
-MYSQL_ADD_PLUGIN(my_csv ${MY_CSV_SOURCES} STORAGE_ENGINE)
+MYSQL_ADD_PLUGIN(my_csv ${MY_CSV_SOURCES} STORAGE_ENGINE MANDATORY)
