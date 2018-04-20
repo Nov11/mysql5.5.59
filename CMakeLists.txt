@@ -19,7 +19,10 @@ if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" GREATER 2.6)
  CMAKE_POLICY(VERSION 2.8)
 endif()
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-nonnull-compare")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-nonnull-compare -Wno-int-in-bool-context")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-nonnull-compare -Wno-int-in-bool-context")
+SET(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG} -Wno-nonnull-compare -Wno-int-in-bool-context")
+SET(CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG} -Wno-nonnull-compare -Wno-int-in-bool-context")
 
 # We use PROPERTIES LINK_INTERFACE_LIBRARIES. See cmake --help-policy CMP0022
 IF(CMAKE_VERSION VERSION_EQUAL  "2.8.12" OR

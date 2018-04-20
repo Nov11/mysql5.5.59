@@ -2,7 +2,7 @@
 // Created by c6s on 18-4-16.
 //
 
-#inclunegative_class.h>
+#include <sql_class.h>
 #include "ha_csv.h"
 #include "table.h"
 #include "field.h"
@@ -379,6 +379,7 @@ mysql_declare_plugin(my_csv)
             nullptr,
             nullptr,
             0x0001,
+            nullptr,
             nullptr,
             nullptr,
             0

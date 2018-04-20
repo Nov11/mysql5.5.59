@@ -2944,6 +2944,7 @@ Query_log_event::Query_log_event(const char* buf, uint event_len,
       host.str= (char *)pos;
       pos+= host.length;
     }
+        //fall through
     default:
       /* That's why you must write status vars in growing order of code */
       DBUG_PRINT("info",("Query_log_event has unknown status vars (first has\

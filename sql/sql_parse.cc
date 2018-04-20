@@ -2870,6 +2870,7 @@ end_with_restore_list:
       break;
     /* Fall through */
   }
+      //fall through
   case SQLCOM_UPDATE_MULTI:
   {
     DBUG_ASSERT(first_table == all_tables && first_table != 0);
@@ -2979,6 +2980,7 @@ end_with_restore_list:
       DBUG_PRINT("debug", ("Just after generate_incident()"));
     }
 #endif
+      //fall through
   case SQLCOM_INSERT:
   {
     DBUG_ASSERT(first_table == all_tables && first_table != 0);
@@ -3704,6 +3706,7 @@ end_with_restore_list:
       initialize this variable because RESET shares the same code as FLUSH
     */
     lex->no_write_to_binlog= 1;
+      //fall through
   case SQLCOM_FLUSH:
   {
     int write_to_binlog;

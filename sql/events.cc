@@ -241,6 +241,7 @@ common_1_lev_code:
     break;
   case INTERVAL_WEEK:
     expr/= 7;
+      //fall through
   default:
     close_quote= FALSE;
     break;

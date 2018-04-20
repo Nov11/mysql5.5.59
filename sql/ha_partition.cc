@@ -7080,6 +7080,7 @@ void ha_partition::print_error(int error, myf errflag)
         m_err_rec= NULL;
         DBUG_VOID_RETURN;
       }
+        //fall through
     default:
       {
         if (!(thd->lex->alter_info.flags & ALTER_TRUNCATE_PARTITION))

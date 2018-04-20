@@ -3489,7 +3489,7 @@ check_next_foreign:
 		row_mysql_handle_errors(&err, trx, NULL, NULL);
 
 		/* Fall through to raise error */
-
+		//fall through
 	default:
 		/* No other possible error returns */
 		ut_error;
@@ -4260,6 +4260,7 @@ loop:
 		dict_index_name_print(stderr, prebuilt->trx, index);
 		fprintf(stderr, " returned %lu\n", ret);
 		/* fall through (this error is ignored by CHECK TABLE) */
+			//fall through
 	case DB_END_OF_INDEX:
 func_exit:
 		mem_free(buf);
