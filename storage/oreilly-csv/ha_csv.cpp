@@ -356,11 +356,13 @@ int ha_csv::fetch_line(uchar *buffer) {
 }
 
 handlerton *mycsv_hton;
+
 static handler *mycsv_create_handler(handlerton *hton,
                                      TABLE_SHARE *table,
                                      MEM_ROOT *mem_root) {
   return new(mem_root) ha_csv(hton, table);
 }
+
 static int mycsv_init(void *p) {
   mycsv_hton = (handlerton *) p;
 
@@ -370,9 +372,11 @@ static int mycsv_init(void *p) {
 
   return 0;
 }
+
 static int mycsv_done(void *p) {
   return 0;
 }
+
 /* Defines the global structure for the plugin. */
 /*struct st_mysql_plugin
 {
