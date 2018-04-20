@@ -18,8 +18,10 @@ IDE on a makefile build system. While 5.7 has a source code tar ball twice the s
 * 'use test' ,create a table with 'engine = your_engine_name' ,place a file named after the format 'table.your_postfix' in test folder of 'data'(i.e. XXX/data) directory with some content and finally 'select * from table_name' should return the content in the file
 * './bin/mysqladmin -u root shutdown' in base directory will shutdown mysqld faster than terminate directly in IDE
 ### helpful links
-*[mysql internal manual](https://dev.mysql.com/doc/internals/en/creating-handlerton.html)
-*[mysql installation from source code](http://howtolamp.com/lamp/mysql/5.6/installing#post-install)
+* [mysql internal manual](https://dev.mysql.com/doc/internals/en/creating-handlerton.html)
+* [mysql installation from source code](http://howtolamp.com/lamp/mysql/5.6/installing#post-install)
+
+
 =================================================================
 
 MySQL Server 5.5
