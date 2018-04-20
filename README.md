@@ -1,13 +1,13 @@
 ### why MySQL 5.5?
 This is the earliest version that I can find on official web site with a cmake support.
 
-I'm going to use this version as code base to apply examples from 'uderstanding mysql internals'.
+I'm going to use this version as code base to apply examples from <[Understanding MySQL Internals](http://shop.oreilly.com/product/9780596009571.do)>.
 
 The version mentioned in that book is 5.1. There is no cmake support back then. And I'm not proficient in setting up
 IDE on a makefile build system. While 5.7 has a source code tar ball twice the size of 5.5. I'll just pick 5.5 for now.
 
 
-### adopting example from chapter 7
+### adopting example from chapter 7 storage engine interface
 * code is in storage/oreilly-csv directory
 * init/done method must be provide for 'show engines;' will not list the new engine.
 * no need to create a handleton as the book states in 5.1. filling some fields of the parameter in init function is enough.
@@ -18,6 +18,7 @@ IDE on a makefile build system. While 5.7 has a source code tar ball twice the s
 * 'use test' ,create a table with 'engine = your_engine_name' ,place a file named after the format 'table.your_postfix' in test folder of 'data'(i.e. XXX/data) directory with some content and finally 'select * from table_name' should return the content in the file
 * './bin/mysqladmin -u root shutdown' in base directory will shutdown mysqld faster than terminate directly in IDE
 ### helpful links
+
 * [mysql internal manual](https://dev.mysql.com/doc/internals/en/creating-handlerton.html)
 * [mysql installation from source code](http://howtolamp.com/lamp/mysql/5.6/installing#post-install)
 
